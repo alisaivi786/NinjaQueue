@@ -99,6 +99,12 @@ public sealed class NinjaQueueWorkerHost : IHostedService, IAsyncDisposable
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken cancellationToken)
     {
+        // An enqueue-only instance started nothing and holds no lease, so it stops without touching the database.
+        if (!_options.Worker.Enabled)
+        {
+            return;
+        }
+
         // Stage 0: stop claiming.
         await _stopClaiming.CancelAsync();
 
@@ -125,7 +131,9 @@ public sealed class NinjaQueueWorkerHost : IHostedService, IAsyncDisposable
 
             await store.RemoveWorkerAsync(WorkerId, _options.Worker.WorkerLivenessWindow * 5, cleanup.Token);
         }
-        catch (Exception ex) when (ex is OperationCanceledException or DbException or TimeoutException)
+        // InvalidOperationException: EF Core's retrying strategy wraps a lost connection in one. Shutdown must still finish;
+        // the lease expires on its own and the worker row ages out.
+        catch (Exception ex) when (ex is OperationCanceledException or DbException or TimeoutException or InvalidOperationException)
         {
             JobLog.MaintenanceFailed(_logger, ex, "shutdown-cleanup");
         }
