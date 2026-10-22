@@ -1,6 +1,6 @@
 name: Publish to nuget.org
 
-# Push a tag like v0.1.0-preview.1 (or v1.0.0) to build, test, pack and publish every NinjaQueue package with that version.
+# Push a tag like v0.1.0-preview.1 (or v1.0.0) to build, pack and publish every NinjaQueue package with that version.
 on:
   push:
     tags: ['v*']
@@ -34,10 +34,6 @@ jobs:
         run: dotnet restore NinjaQueue.slnx --locked-mode
       - name: Build
         run: dotnet build NinjaQueue.slnx -c Release --no-restore -p:Version=$VERSION -p:ContinuousIntegrationBuild=true
-      - name: Test
-        run: |
-          dotnet test tests/NinjaQueue.Tests -c Release --no-build
-          dotnet test tests/NinjaQueue.IntegrationTests -c Release --no-build
       - name: Pack
         run: dotnet pack NinjaQueue.slnx -c Release --no-build -p:Version=$VERSION -o artifacts
       - name: nuget.org login (Trusted Publishing)

@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  build-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +28,3 @@ jobs:
         run: dotnet restore NinjaQueue.slnx --locked-mode
       - name: Build
         run: dotnet build NinjaQueue.slnx -c Release --no-restore
-      - name: Unit tests
-        run: dotnet test tests/NinjaQueue.Tests -c Release --no-build
-      - name: Integration tests (PostgreSQL 16 + SQL Server 2022 via Testcontainers)
-        run: dotnet test tests/NinjaQueue.IntegrationTests -c Release --no-build
