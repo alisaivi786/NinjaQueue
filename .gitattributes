@@ -1,0 +1,22 @@
+# Normalize line endings so `dotnet format` (end_of_line = lf in .editorconfig) and
+# git agree. Without this, core.autocrlf=true expects CRLF in the working tree while
+# the formatter writes LF, so every `make format` shows phantom "modified" files.
+#
+# Store text as LF in the repo AND check it out as LF on every platform.
+* text=auto eol=lf
+
+# Windows batch/script files must stay CRLF to run correctly.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary assets — never touch their bytes.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.dll binary
+*.exe binary
+*.snk binary

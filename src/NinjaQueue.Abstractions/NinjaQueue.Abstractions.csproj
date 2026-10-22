@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- What application code references: job contracts and the persisted values. No dependencies beyond the framework. -->
+
+  <PropertyGroup>
+    <RootNamespace>NinjaQueue</RootNamespace>
+    <Description>Contracts for NinjaQueue: job handler and enqueue abstractions, persisted job states and event codes.</Description>
+  </PropertyGroup>
+
+</Project>

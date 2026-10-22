@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The provider-agnostic engine: registry, serializer, enqueue validation, executor, workers and maintenance. Storage
+       (SQL, transactions) lives behind IJobStore, implemented by NinjaQueue.EntityFrameworkCore. -->
+
+  <PropertyGroup>
+    <Description>NinjaQueue engine: database-backed background jobs with fenced completion, leases, retries and recovery.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NinjaQueue.Abstractions\NinjaQueue.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cronos" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="NinjaQueue.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="NinjaQueue.PostgreSql" />
+    <InternalsVisibleTo Include="NinjaQueue.SqlServer" />
+    <InternalsVisibleTo Include="NinjaQueue.Tests" />
+    <InternalsVisibleTo Include="NinjaQueue.IntegrationTests" />
+  </ItemGroup>
+
+</Project>

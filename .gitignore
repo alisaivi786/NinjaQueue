@@ -1,0 +1,17 @@
+bin/
+obj/
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+TestResults/
+artifacts/
+nupkgs/
+*.nupkg
+*.snupkg
+coverage*/
+node_modules/
+dist/
+.env
+.env.*

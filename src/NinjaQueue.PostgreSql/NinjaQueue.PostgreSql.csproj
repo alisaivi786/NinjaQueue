@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>PostgreSQL for NinjaQueue: UsePostgreSql(), the PostgreSQL migrations provider and LISTEN/NOTIFY instant wake-up.</Description>
+    <PackageTags>$(PackageTags);postgres;npgsql</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NinjaQueue.EntityFrameworkCore\NinjaQueue.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="NinjaQueue.Tests" />
+    <InternalsVisibleTo Include="NinjaQueue.IntegrationTests" />
+  </ItemGroup>
+
+</Project>

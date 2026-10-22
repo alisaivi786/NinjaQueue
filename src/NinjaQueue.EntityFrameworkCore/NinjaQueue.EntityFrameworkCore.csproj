@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Storage: the job entities mapped into the HOST's DbContext (modelBuilder.ApplyNinjaQueue), so a staged job commits in
+       the host's transaction. Column names are set explicitly, so the mapping does not depend on the host's naming convention. -->
+
+  <PropertyGroup>
+    <Description>EF Core storage for NinjaQueue: own data layer, NinjaQueueDbContext and the schema migrations (provider-neutral; add NinjaQueue.PostgreSql or NinjaQueue.SqlServer).</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NinjaQueue.Abstractions\NinjaQueue.Abstractions.csproj" />
+    <ProjectReference Include="..\NinjaQueue\NinjaQueue.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\NinjaQueueSql.cs" Link="Shared\NinjaQueueSql.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="NinjaQueue.PostgreSql" />
+    <InternalsVisibleTo Include="NinjaQueue.SqlServer" />
+    <InternalsVisibleTo Include="NinjaQueue.Tests" />
+    <InternalsVisibleTo Include="NinjaQueue.IntegrationTests" />
+  </ItemGroup>
+
+</Project>

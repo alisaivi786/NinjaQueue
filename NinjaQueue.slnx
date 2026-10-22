@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NinjaQueue.Abstractions/NinjaQueue.Abstractions.csproj" />
+    <Project Path="src/NinjaQueue/NinjaQueue.csproj" />
+    <Project Path="src/NinjaQueue.EntityFrameworkCore/NinjaQueue.EntityFrameworkCore.csproj" />
+    <Project Path="src/NinjaQueue.PostgreSql/NinjaQueue.PostgreSql.csproj" />
+    <Project Path="src/NinjaQueue.SqlServer/NinjaQueue.SqlServer.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NinjaQueue.Tests/NinjaQueue.Tests.csproj" />
+    <Project Path="tests/NinjaQueue.IntegrationTests/NinjaQueue.IntegrationTests.csproj" />
+    <Project Path="tests/NinjaQueue.PerformanceTests/NinjaQueue.PerformanceTests.csproj" />
+  </Folder>
+</Solution>
