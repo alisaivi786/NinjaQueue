@@ -28,6 +28,7 @@ internal sealed class PostgresNotifyListener<TContext>(
     private readonly NinjaQueueOptions _options = options.Value;
     private readonly CancellationTokenSource _stop = new();
     private Task _loop = Task.CompletedTask;
+    private int _disposed;
     private int _connections;
     private int _notifications;
 
@@ -55,6 +56,13 @@ internal sealed class PostgresNotifyListener<TContext>(
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
+        // Never started (LISTEN/NOTIFY off, or an enqueue-only instance): nothing to stop. The host may also stop it after the
+        // container disposed it (test hosts do), so the cancellation source must not be touched then.
+        if (ReferenceEquals(_loop, Task.CompletedTask) || Volatile.Read(ref _disposed) != 0)
+        {
+            return;
+        }
+
         await _stop.CancelAsync();
         try
         {
@@ -68,7 +76,11 @@ internal sealed class PostgresNotifyListener<TContext>(
 
     public ValueTask DisposeAsync()
     {
-        _stop.Dispose();
+        if (Interlocked.Exchange(ref _disposed, 1) == 0)
+        {
+            _stop.Dispose();
+        }
+
         return ValueTask.CompletedTask;
     }
 
