@@ -23,11 +23,13 @@ public static class NinjaQueueModelBuilderExtensions
         ArgumentNullException.ThrowIfNull(modelBuilder);
         JobSchemaName.Validate(schema);
         MapTables(modelBuilder, schema);
+        MapDashboardTables(modelBuilder, schema);
         if (excludeFromMigrations)
         {
             foreach (Type entity in (Type[])[typeof(JobRecord), typeof(JobQueueEntry), typeof(JobAttemptRecord), typeof(JobEventRecord),
                          typeof(RecurringJobRecord), typeof(JobWorkerRecord), typeof(JobLeaseRecord), typeof(JobSideEffectRecord),
-                         typeof(JobActiveKeyRecord), typeof(JobFencedStepRecord), typeof(JobAdminOperationRecord)])
+                         typeof(JobActiveKeyRecord), typeof(JobFencedStepRecord), typeof(JobAdminOperationRecord),
+                         typeof(DashboardUserRecord), typeof(DashboardUserTenantRecord), typeof(TenantRecord)])
             {
                 modelBuilder.Entity(entity).Metadata.SetIsTableExcludedFromMigrations(true);
             }
@@ -218,6 +220,41 @@ public static class NinjaQueueModelBuilderExtensions
             b.HasIndex(x => x.GuidId).IsUnique().HasDatabaseName("ux_job_admin_operations_guid_id");
             b.HasIndex(x => new { x.TenantScope, x.ActorId, x.IdempotencyKey }).IsUnique()
                 .HasDatabaseName("ux_job_admin_operations_idempotency");
+            SnakeCaseColumns(b);
+        });
+    }
+
+    private static void MapDashboardTables(ModelBuilder modelBuilder, string schema)
+    {
+        modelBuilder.Entity<DashboardUserRecord>(b =>
+        {
+            b.ToTable("dashboard_users", schema);
+            b.HasKey(x => x.Id).HasName("pk_dashboard_users");
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.UserName).HasMaxLength(100);
+            b.Property(x => x.PasswordHash).HasMaxLength(500);
+            b.HasIndex(x => x.UserName).IsUnique().HasDatabaseName("ux_dashboard_users_user_name");
+            SnakeCaseColumns(b);
+        });
+
+        modelBuilder.Entity<TenantRecord>(b =>
+        {
+            b.ToTable("tenants", schema);
+            b.HasKey(x => x.TenantId).HasName("pk_tenants");
+            b.Property(x => x.TenantId).ValueGeneratedNever();
+            b.Property(x => x.Name).HasMaxLength(200);
+            SnakeCaseColumns(b);
+        });
+
+        modelBuilder.Entity<DashboardUserTenantRecord>(b =>
+        {
+            b.ToTable("dashboard_user_tenants", schema);
+            b.HasKey(x => new { x.UserId, x.TenantId }).HasName("pk_dashboard_user_tenants");
+            b.HasOne<DashboardUserRecord>().WithMany().HasForeignKey(x => x.UserId)
+                .HasConstraintName("fk_dashboard_user_tenants_user_id").OnDelete(DeleteBehavior.Cascade);
+            b.HasOne<TenantRecord>().WithMany().HasForeignKey(x => x.TenantId)
+                .HasConstraintName("fk_dashboard_user_tenants_tenant_id").OnDelete(DeleteBehavior.Cascade);
+            b.HasIndex(x => x.TenantId).HasDatabaseName("ix_dashboard_user_tenants_tenant_id");
             SnakeCaseColumns(b);
         });
     }

@@ -37,6 +37,7 @@ public static class NinjaQueueEfCoreBuilderExtensions
         builder.Services.TryAddScoped<IJobDeadLetterStore>(sp => sp.GetRequiredService<EfCoreJobStore<TContext>>());
 
         builder.Services.TryAddScoped<IJobRecurringStore>(sp => sp.GetRequiredService<EfCoreJobStore<TContext>>());
+        builder.Services.TryAddScoped<Admin.IJobDashboardStore>(sp => sp.GetRequiredService<EfCoreJobStore<TContext>>());
 
         // The schema: NinjaQueue installs and upgrades its own tables (AutoMigrate), before any worker starts. The
         // initializer goes right after the registry validator (index 0) and so before the worker host.

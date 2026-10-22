@@ -1,0 +1,449 @@
+/*
+ * OpsFusion design tokens — shell/glass/panel gradient system used by
+ * auth-style surfaces (login, organization access, etc.) plus the base
+ * shadcn-style color tokens that libs/opsfusion-web's components rely on
+ * (bg-primary, bg-background, bg-popover, border-input, ...).
+ *
+ * Palette-driven --opsfusion-* custom properties are overwritten at runtime
+ * by applyThemePaletteToDocument() from ./apply.ts — the values below are
+ * just the "default" palette's initial paint before hydration.
+ */
+
+/*
+ * Without this, Tailwind v4's dark: variant falls back to matching
+ * @media (prefers-color-scheme: dark) instead of the .dark class that
+ * applyThemeModeToDocument() (./apply.ts) actually sets on <html> based on
+ * the theme store — so dark: styles would apply/not apply based on the
+ * OS/browser preference, ignoring the in-app light/dark toggle entirely.
+ * libs/ninja-theme/src/styles.css defines the same variant; apps that don't
+ * import ninja-theme (e.g. hcm-portal) need it declared here instead.
+ */
+/* dark: never applies inside .opsfusion-fixed-theme (sign-in / sign-up screens stay light). */
+@custom-variant dark (&:is(.dark *):not(.opsfusion-fixed-theme, .opsfusion-fixed-theme *));
+
+/*
+ * Without this, a bare `border` utility (e.g. Button's `variant="outline"`)
+ * has no color rule to inherit and falls back to the browser default
+ * (currentColor — i.e. the text color, rendering as a near-black box)
+ * instead of the --border token defined below. libs/ninja-theme/src/styles.css
+ * provides the equivalent reset (using its own --color-gray-200 token); apps
+ * that don't import ninja-theme (hcm-portal, admin-portal) need it declared
+ * here instead so opsfusion-theme works standalone.
+ */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border);
+  }
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  /*
+   * --primary/--ring are palette-driven at runtime (applyThemePaletteToDocument
+   * in ./apply.ts sets them from the active palette's `railColor`, the same
+   * swatch used for the SideMenu rail/scrollbar thumb) so every opsfusion-web
+   * button/tooltip/focus-ring shifts with the color-theme picker instead of
+   * staying a fixed blue. The value below matches the default palette
+   * (sapphire-night)'s railColor, for the same before-hydration flash reason
+   * documented above.
+   */
+  --primary: #284879;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #e9ebef;
+  --accent-foreground: #0f172a;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --ring: #284879;
+  --radius: 0.625rem;
+
+  /*
+   * These initial values match THEME_PALETTES's "sapphire-night" entry in
+   * ./palettes.ts (the current DEFAULT_THEME_PALETTE_ID) — kept in sync by
+   * hand since this file paints before OpsFusionThemeProvider's useEffect
+   * runs. Theming here is entirely client-side (Zustand + localStorage),
+   * not API-driven like the legacy app, so on first visit (no persisted
+   * palette yet) the runtime-applied palette IS this default — matching
+   * these values exactly avoids a flash from the wrong color on load. If
+   * you change DEFAULT_THEME_PALETTE_ID, update these to match.
+   */
+  --opsfusion-shell-top-glow: rgba(59, 130, 246, 0.13);
+  --opsfusion-shell-gradient-start: #20395d;
+  --opsfusion-shell-gradient-end: #284879;
+  --opsfusion-shell-gradient: radial-gradient(
+      circle at top,
+      var(--opsfusion-shell-top-glow),
+      transparent 20%
+    ),
+    linear-gradient(
+      180deg,
+      var(--opsfusion-shell-gradient-start) 0%,
+      var(--opsfusion-shell-gradient-end) 100%
+    );
+  --opsfusion-shell-foreground: #ffffff;
+  --opsfusion-shell-border: rgba(255, 255, 255, 0.1);
+  --opsfusion-glass-border: rgba(255, 255, 255, 0.16);
+  --opsfusion-glass-background: rgba(255, 255, 255, 0.08);
+  --opsfusion-glass-foreground: rgba(255, 255, 255, 0.9);
+  --opsfusion-menu-foreground: rgba(255, 255, 255, 0.92);
+  --opsfusion-panel-surface-start: #f7faff;
+  --opsfusion-panel-surface-end: #edf3fb;
+  --opsfusion-panel-surface: linear-gradient(
+    180deg,
+    var(--opsfusion-panel-surface-start) 0%,
+    var(--opsfusion-panel-surface-end) 100%
+  );
+  --opsfusion-panel-border: #cedcf4;
+  --opsfusion-panel-foreground: #223858;
+  --opsfusion-panel-hover-border: #81a7e3;
+  --opsfusion-panel-hover-glow: rgba(96, 165, 250, 0.08);
+  --opsfusion-panel-hover-start: #355c96;
+  --opsfusion-panel-hover-end: #284879;
+  --opsfusion-panel-hover-surface: radial-gradient(
+      circle at top,
+      var(--opsfusion-panel-hover-glow),
+      transparent 28%
+    ),
+    linear-gradient(
+      180deg,
+      var(--opsfusion-panel-hover-start) 0%,
+      var(--opsfusion-panel-hover-end) 100%
+    );
+  --opsfusion-panel-hover-foreground: #ffffff;
+  --opsfusion-rail-color: #284879;
+}
+
+.dark {
+  --background: #1a1d23;
+  --foreground: #e8eaed;
+  --card: #23262d;
+  --card-foreground: #e8eaed;
+  --popover: #23262d;
+  --popover-foreground: #e8eaed;
+  --primary: #284879;
+  --primary-foreground: #ffffff;
+  --secondary: #2a3947;
+  --secondary-foreground: #e8eaed;
+  --muted: #2a3947;
+  --muted-foreground: #9ca3af;
+  --accent: #354a5f;
+  --accent-foreground: #e8eaed;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --input-background: #2a3947;
+  --ring: #284879;
+
+  --opsfusion-panel-surface-start: #4b546b;
+  --opsfusion-panel-surface-end: #42485b;
+  --opsfusion-panel-border: rgba(255, 255, 255, 0.1);
+  --opsfusion-panel-foreground: #ffffff;
+  --opsfusion-panel-hover-border: rgba(255, 255, 255, 0.18);
+}
+
+/*
+ * Sign-in, sign-up and onboarding screens always look the same: Sapphire Night, light mode. Set on the
+ * screen's root, it overrides both the palette's inline vars on <html> and the .dark tokens. Composite
+ * vars (gradients) are redeclared too, since a var() resolves where it is declared, not where it is used.
+ */
+.opsfusion-fixed-theme {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #284879;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #e9ebef;
+  --accent-foreground: #0f172a;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --ring: #284879;
+
+  --opsfusion-shell-top-glow: rgba(59, 130, 246, 0.13);
+  --opsfusion-shell-gradient-start: #20395d;
+  --opsfusion-shell-gradient-end: #284879;
+  --opsfusion-shell-gradient: radial-gradient(
+      circle at top,
+      var(--opsfusion-shell-top-glow),
+      transparent 20%
+    ),
+    linear-gradient(
+      180deg,
+      var(--opsfusion-shell-gradient-start) 0%,
+      var(--opsfusion-shell-gradient-end) 100%
+    );
+  --opsfusion-shell-foreground: #ffffff;
+  --opsfusion-shell-border: rgba(255, 255, 255, 0.1);
+  --opsfusion-glass-border: rgba(255, 255, 255, 0.16);
+  --opsfusion-glass-background: rgba(255, 255, 255, 0.08);
+  --opsfusion-glass-foreground: rgba(255, 255, 255, 0.9);
+  --opsfusion-menu-foreground: rgba(255, 255, 255, 0.92);
+  --opsfusion-panel-surface-start: #f7faff;
+  --opsfusion-panel-surface-end: #edf3fb;
+  --opsfusion-panel-surface: linear-gradient(
+    180deg,
+    var(--opsfusion-panel-surface-start) 0%,
+    var(--opsfusion-panel-surface-end) 100%
+  );
+  --opsfusion-panel-border: #cedcf4;
+  --opsfusion-panel-foreground: #223858;
+  --opsfusion-panel-hover-border: #81a7e3;
+  --opsfusion-panel-hover-glow: rgba(96, 165, 250, 0.08);
+  --opsfusion-panel-hover-start: #355c96;
+  --opsfusion-panel-hover-end: #284879;
+  --opsfusion-panel-hover-surface: radial-gradient(
+      circle at top,
+      var(--opsfusion-panel-hover-glow),
+      transparent 28%
+    ),
+    linear-gradient(
+      180deg,
+      var(--opsfusion-panel-hover-start) 0%,
+      var(--opsfusion-panel-hover-end) 100%
+    );
+  --opsfusion-panel-hover-foreground: #ffffff;
+  --opsfusion-rail-color: #284879;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-opsfusion-shell-foreground: var(--opsfusion-shell-foreground);
+  --color-opsfusion-shell-border: var(--opsfusion-shell-border);
+  --color-opsfusion-glass-border: var(--opsfusion-glass-border);
+  --color-opsfusion-glass-background: var(--opsfusion-glass-background);
+  --color-opsfusion-glass-foreground: var(--opsfusion-glass-foreground);
+  --color-opsfusion-panel-border: var(--opsfusion-panel-border);
+  --color-opsfusion-panel-foreground: var(--opsfusion-panel-foreground);
+  --color-opsfusion-panel-hover-border: var(--opsfusion-panel-hover-border);
+  --color-opsfusion-panel-hover-foreground: var(--opsfusion-panel-hover-foreground);
+  --color-opsfusion-rail: var(--opsfusion-rail-color);
+}
+
+@layer components {
+  .opsfusion-shell-surface {
+    background: var(--opsfusion-shell-gradient);
+    color: var(--opsfusion-shell-foreground);
+    border-color: var(--opsfusion-shell-border);
+  }
+
+  .opsfusion-glass-control {
+    border-color: var(--opsfusion-glass-border);
+    background: var(--opsfusion-glass-background);
+    color: var(--opsfusion-glass-foreground);
+    backdrop-filter: blur(12px);
+  }
+
+  .opsfusion-glass-control:hover {
+    border-color: var(--opsfusion-glass-border);
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--opsfusion-shell-foreground);
+  }
+
+  .opsfusion-panel-button {
+    border-color: var(--opsfusion-panel-hover-border);
+    background: var(--opsfusion-panel-hover-surface);
+    color: var(--opsfusion-panel-hover-foreground);
+  }
+
+  .opsfusion-panel-button:hover {
+    border-color: var(--opsfusion-panel-hover-border);
+    background: var(--opsfusion-panel-hover-surface);
+    color: var(--opsfusion-panel-hover-foreground);
+    filter: brightness(1.06);
+  }
+
+  .opsfusion-panel-button,
+  .opsfusion-panel-button:hover,
+  .opsfusion-panel-button:focus-visible {
+    color: var(--opsfusion-panel-hover-foreground);
+  }
+
+  button.opsfusion-panel-button,
+  button.opsfusion-panel-button:hover,
+  button.opsfusion-panel-button:focus-visible,
+  button.opsfusion-panel-button > span,
+  button.opsfusion-panel-button:hover > span,
+  button.opsfusion-panel-button:focus-visible > span {
+    color: var(--opsfusion-panel-hover-foreground) !important;
+  }
+}
+
+/* Custom rail-colored scrollbar for scrollable content areas — shared by
+   libs/opsfusion-shell components (AppModal, AppShell, NotificationPanel)
+   and any app that opts into the same look for its own content. See
+   D:\Code\sap-services\apps\web's dashboard-content-scrollbar. */
+.opsfusion-content-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--opsfusion-rail-color, #475068) transparent;
+}
+
+.opsfusion-content-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.opsfusion-content-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* No border/background-clip padding trick here — that combination is
+   inconsistently supported on scrollbar-thumb pseudo-elements across
+   Chromium builds and can render as an unstyled/near-invisible thumb.
+   A plain background-color is universally reliable. */
+.opsfusion-content-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--opsfusion-rail-color, #475068);
+  border-radius: 999px;
+}
+
+.opsfusion-content-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--opsfusion-panel-hover-end, var(--opsfusion-rail-color, #475068));
+}
+
+/* The light rail color the thumb otherwise uses is barely visible against
+   dark surfaces — swap to a translucent white in dark mode instead. */
+.dark .opsfusion-content-scrollbar {
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+
+.dark .opsfusion-content-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+.dark .opsfusion-content-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.opsfusion-hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.opsfusion-hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.org-chart--fullscreen {
+  width: 100vw;
+  height: 100vh;
+}
+
+.org-chart__root,
+.org-chart__children {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.org-chart__children {
+  position: relative;
+  flex-shrink: 0;
+  width: max-content;
+  padding-top: 24px;
+}
+
+.org-chart__children::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 12px;
+  background: var(--border);
+}
+
+.org-chart__node {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.org-chart__root {
+  width: max-content;
+  margin: 0 auto;
+}
+
+.org-chart__children > .org-chart__node::before,
+.org-chart__children > .org-chart__node::after {
+  content: '';
+  position: absolute;
+  top: -12px;
+  background: var(--border);
+}
+
+.org-chart__children > .org-chart__node::before {
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.org-chart__children > .org-chart__node::after {
+  left: 50%;
+  width: 1px;
+  height: 12px;
+}
+
+.org-chart__children > .org-chart__node:only-child::before {
+  display: none;
+}
+
+.org-chart__children > .org-chart__node:first-child::before {
+  left: 50%;
+}
+
+.org-chart__children > .org-chart__node:last-child::before {
+  right: 50%;
+}

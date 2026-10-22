@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo Shop · NinjaQueue</title>
+  <link rel="stylesheet" href="shop.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-row">
+      <div class="brand"><span class="logo">N</span> Demo Shop <small>powered by NinjaQueue</small></div>
+      <div class="top-actions">
+        <label class="tenant">Shop as
+          <select id="tenant"></select>
+        </label>
+        <a class="button primary" href="jobs/" target="_blank" rel="noopener">Open jobs dashboard ↗</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <h1>Create real background jobs, then watch them in the dashboard</h1>
+      <p>Every button below enqueues jobs through NinjaQueue (database: <strong id="db">…</strong>). Open the
+        <a href="jobs/" target="_blank" rel="noopener">dashboard</a> next to this page and sign in as <code>admin</code> / <code>admin</code>
+        (you will choose a new password), or as a tenant user <code>acme</code> / <code>globex</code> with password <code>demo-pass-123</code>.</p>
+    </section>
+
+    <section class="grid" id="cards"></section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Activity</h2>
+        <button class="button ghost" id="clear-log" type="button">Clear</button>
+      </div>
+      <ol id="log" class="log"></ol>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Recent orders <small id="orders-tenant"></small></h2>
+        <button class="button ghost" id="refresh-orders" type="button">Refresh</button>
+      </div>
+      <table class="orders">
+        <thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th><th>Placed</th></tr></thead>
+        <tbody id="orders"></tbody>
+      </table>
+      <p class="hint">Status moves Placed → Paid → Shipped as the payment and shipping jobs run. A declined card stays “Placed” until you retry the payment job in the dashboard.</p>
+    </section>
+  </main>
+
+  <template id="card">
+    <article class="card">
+      <div class="card-tag"></div>
+      <h3></h3>
+      <p class="card-text"></p>
+      <p class="card-watch"></p>
+      <div class="card-actions"></div>
+      <details>
+        <summary>How it is written</summary>
+        <pre><code></code></pre>
+      </details>
+    </article>
+  </template>
+
+  <script src="shop.js"></script>
+</body>
+</html>

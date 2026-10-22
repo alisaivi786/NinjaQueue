@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NinjaQueue.EntityFrameworkCore;
 using NinjaQueue.Execution;
 using NinjaQueue.Hosting;
 using NinjaQueue.Storage;

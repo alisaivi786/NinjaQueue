@@ -168,6 +168,23 @@ public static class SchemaManifest
         "job_admin_operations.report_json text null",
         "job_admin_operations.created_at_utc timestamptz not null",
         "job_admin_operations.completed_at_utc timestamptz null",
+
+        // dashboard (migration 20261023000000_Dashboard)
+        "dashboard_users.id uuid not null",
+        "dashboard_users.user_name varchar(100) not null",
+        "dashboard_users.password_hash varchar(500) not null",
+        "dashboard_users.is_admin bool not null",
+        "dashboard_users.must_change_password bool not null",
+        "dashboard_users.failed_logins int not null",
+        "dashboard_users.locked_until_utc timestamptz null",
+        "dashboard_users.security_stamp uuid not null",
+        "dashboard_users.created_at_utc timestamptz not null",
+        "dashboard_users.updated_at_utc timestamptz not null",
+        "dashboard_user_tenants.user_id uuid not null",
+        "dashboard_user_tenants.tenant_id uuid not null",
+        "tenants.tenant_id uuid not null",
+        "tenants.name varchar(200) not null",
+        "tenants.created_at_utc timestamptz not null",
     ];
 
     public static readonly string[] Indexes =
@@ -203,6 +220,11 @@ public static class SchemaManifest
         "job_admin_operations.pk_job_admin_operations PK (id)",
         "job_admin_operations.ux_job_admin_operations_guid_id UNIQUE (guid_id)",
         "job_admin_operations.ux_job_admin_operations_idempotency UNIQUE (tenant_scope, actor_id, idempotency_key)",
+        "dashboard_users.pk_dashboard_users PK (id)",
+        "dashboard_users.ux_dashboard_users_user_name UNIQUE (user_name)",
+        "dashboard_user_tenants.pk_dashboard_user_tenants PK (user_id, tenant_id)",
+        "dashboard_user_tenants.ix_dashboard_user_tenants_tenant_id INDEX (tenant_id)",
+        "tenants.pk_tenants PK (tenant_id)",
     ];
 
     public static readonly string[] Checks =
@@ -234,6 +256,8 @@ public static class SchemaManifest
         "job_events.fk_job_events_job_id -> background_jobs",
         "job_side_effects.fk_job_side_effects_job_id -> background_jobs",
         "job_active_keys.fk_job_active_keys_job_id -> background_jobs",
+        "dashboard_user_tenants.fk_dashboard_user_tenants_user_id -> dashboard_users",
+        "dashboard_user_tenants.fk_dashboard_user_tenants_tenant_id -> tenants",
     ];
 
     public static readonly string[] SeededLeases =

@@ -1,7 +1,6 @@
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using NinjaQueue.EntityFrameworkCore;
 using NinjaQueue.Execution;
 using NinjaQueue.Hosting;
 using NinjaQueue.Storage;

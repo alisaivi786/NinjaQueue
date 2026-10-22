@@ -13,6 +13,7 @@
     <ProjectReference Include="..\..\src\NinjaQueue.EntityFrameworkCore\NinjaQueue.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\NinjaQueue.PostgreSql\NinjaQueue.PostgreSql.csproj" />
     <ProjectReference Include="..\..\src\NinjaQueue.SqlServer\NinjaQueue.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\NinjaQueue.Dashboard\NinjaQueue.Dashboard.csproj" />
   </ItemGroup>
 
   <ItemGroup>

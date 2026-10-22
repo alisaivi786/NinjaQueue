@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>The NinjaQueue dashboard: a built-in web UI and HTTP API for jobs, recurring schedules, workers, users and tenants. One line: app.MapNinjaQueueDashboard("/jobs").</Description>
+    <PackageTags>$(PackageTags);dashboard</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NinjaQueue\NinjaQueue.csproj" />
+  </ItemGroup>
+
+  <!-- The UI (built from ui/ by npm run build into wwwroot/) ships inside the assembly. -->
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\**\*" LogicalName="ninjaqueue-ui/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Remove="ui\**" />
+    <Compile Remove="ui\**" />
+  </ItemGroup>
+
+  <!-- A fresh clone has no wwwroot/: build the UI once (needs Node.js 20+). After UI changes, run npm run build in ui/. -->
+  <Target Name="BuildDashboardUi" BeforeTargets="PrepareForBuild" Condition="!Exists('$(MSBuildThisFileDirectory)wwwroot\index.html')">
+    <Exec Command="npm ci --no-audit --no-fund" WorkingDirectory="$(MSBuildThisFileDirectory)ui" />
+    <Exec Command="npm run build" WorkingDirectory="$(MSBuildThisFileDirectory)ui" />
+    <ItemGroup>
+      <EmbeddedResource Include="$(MSBuildThisFileDirectory)wwwroot\**\*" Exclude="@(EmbeddedResource)" LogicalName="ninjaqueue-ui/%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="NinjaQueue.Tests" />
+    <InternalsVisibleTo Include="NinjaQueue.IntegrationTests" />
+  </ItemGroup>
+
+</Project>

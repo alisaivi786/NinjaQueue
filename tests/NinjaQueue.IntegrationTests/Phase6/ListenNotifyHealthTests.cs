@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using NinjaQueue.EntityFrameworkCore;
 
 namespace NinjaQueue.IntegrationTests.Phase6;
 

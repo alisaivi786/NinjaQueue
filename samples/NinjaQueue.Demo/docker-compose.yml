@@ -1,0 +1,62 @@
+# Demo Shop + NinjaQueue dashboard on Docker.
+#   PostgreSQL (default):        docker compose up --build            -> http://localhost:8080 and http://localhost:8080/jobs
+#   SQL Server as well:          docker compose --profile sqlserver up --build   -> also http://localhost:8081
+# The database passwords below are for this local demo only.
+name: ninjaqueue-demo
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ninjaqueue_demo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ninjaqueue_demo"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  demo:
+    build:
+      context: ../..
+      dockerfile: samples/NinjaQueue.Demo/Dockerfile
+    image: ninjaqueue-demo:local
+    environment:
+      Demo__Database: PostgreSql
+      ConnectionStrings__Demo: Host=postgres;Port=5432;Database=ninjaqueue_demo;Username=postgres;Password=postgres
+      NinjaQueue__ListenNotify__Enabled: "true"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  sqlserver:
+    profiles: ["sqlserver"]
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "NinjaQueue!Demo2026"
+    volumes:
+      - mssqldata:/var/opt/mssql
+
+  demo-sqlserver:
+    profiles: ["sqlserver"]
+    image: ninjaqueue-demo:local
+    build:
+      context: ../..
+      dockerfile: samples/NinjaQueue.Demo/Dockerfile
+    environment:
+      Demo__Database: SqlServer
+      ConnectionStrings__Demo: Server=sqlserver,1433;Database=ninjaqueue_demo;User Id=sa;Password=NinjaQueue!Demo2026;TrustServerCertificate=True
+    ports:
+      - "8081:8080"
+    depends_on:
+      - sqlserver
+
+volumes:
+  pgdata:
+  mssqldata:

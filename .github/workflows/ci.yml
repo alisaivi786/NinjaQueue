@@ -16,6 +16,14 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/NinjaQueue.Dashboard/ui/package-lock.json
+      - name: Dashboard UI
+        working-directory: src/NinjaQueue.Dashboard/ui
+        run: npm ci --no-audit --no-fund && npm run build
       - name: Restore
         run: dotnet restore NinjaQueue.slnx --locked-mode
       - name: Build

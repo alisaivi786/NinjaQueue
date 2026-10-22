@@ -47,7 +47,16 @@ internal sealed class NinjaQueueSchemaMigrator<TContext>(
     where TContext : DbContext
 {
     public Task MigrateAsync(CancellationToken cancellationToken = default)
-        => WithMigrationContextAsync((context, ct) => context.Database.MigrateAsync(ct), cancellationToken);
+        => WithMigrationContextAsync(async (context, ct) =>
+        {
+            // Read-only check first: an up-to-date schema needs no DDL rights, so the app can run on a least-privilege account.
+            if ((await context.Database.GetPendingMigrationsAsync(ct)).Any())
+            {
+                await context.Database.MigrateAsync(ct);
+            }
+
+            return true;
+        }, cancellationToken);
 
     public Task<string> GenerateScriptAsync(CancellationToken cancellationToken = default)
         => WithMigrationContextAsync((context, _) => Task.FromResult(

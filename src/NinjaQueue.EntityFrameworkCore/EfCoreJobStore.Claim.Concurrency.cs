@@ -3,8 +3,8 @@ using System.Data.Common;
 using System.Security.Cryptography;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Storage;
-using NinjaQueue.EntityFrameworkCore.Sql;
 using NinjaQueue.Enqueue;
+using NinjaQueue.EntityFrameworkCore.Sql;
 using NinjaQueue.Storage;
 
 namespace NinjaQueue.EntityFrameworkCore;

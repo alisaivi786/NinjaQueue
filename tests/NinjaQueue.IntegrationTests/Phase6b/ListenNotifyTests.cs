@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using NinjaQueue.EntityFrameworkCore;
 using Xunit.Abstractions;
 using static NinjaQueue.IntegrationTests.Phase6b.Phase6bSupport;
 
@@ -179,7 +178,14 @@ public sealed class ListenNotifyTests(JobsDatabaseFixture fixture, ITestOutputHe
         await using WorkerTestHost producer = Producer(db, listenRequested);
         await worker.StartAsync();
         await Task.Delay(500);
-        Listener(worker).IsListening.Should().BeFalse(kind == DatabaseKind.Postgres ? "LISTEN/NOTIFY is opt-in" : "SQL Server has no LISTEN; the option is ignored");
+        if (kind == DatabaseKind.Postgres)
+        {
+            Listener(worker).IsListening.Should().BeFalse("LISTEN/NOTIFY is opt-in");
+        }
+        else
+        {
+            worker.Services.GetService(typeof(PostgresNotifyListener<TestHostDbContext>)).Should().BeNull("SQL Server has no LISTEN; the option is ignored");
+        }
 
         List<double> latencies = await MeasureAsync(producer, log, "poll", 15, TimeSpan.FromSeconds(5));
         Report($"Polling {kind} (poll {poll.TotalMilliseconds} ms)", latencies);

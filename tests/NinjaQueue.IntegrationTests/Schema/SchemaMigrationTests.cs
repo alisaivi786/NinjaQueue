@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NinjaQueue.EntityFrameworkCore;
 using NinjaQueue.EntityFrameworkCore.Migrations;
@@ -117,11 +116,11 @@ public sealed class SchemaMigrationTests(JobsDatabaseFixture fixture)
         await migrator.MigrateAsync();
         await migrator.MigrateAsync();
         SchemaManifest.AssertMatches(await SchemaSnapshot.ReadAsync(db, JobSchemaName.Default));
-        (await migrator.GetAppliedMigrationsAsync()).Should().Equal("20261022000000_InitialSchema");
+        (await migrator.GetAppliedMigrationsAsync()).Should().Equal("20261022000000_InitialSchema", "20261023000000_Dashboard");
 
         string script = await migrator.GenerateScriptAsync();
         script.Should().Contain("background_jobs").And.Contain(NinjaQueueDbContextOptionsExtensions.MigrationsHistoryTable)
-            .And.Contain("20261022000000_InitialSchema");
+            .And.Contain("20261022000000_InitialSchema").And.Contain("dashboard_users");
 
         await migrator.UninstallAsync();
         (await SchemaSnapshot.SchemaExistsAsync(db, JobSchemaName.Default)).Should().BeFalse("uninstall removes the tables, the history and the schema");

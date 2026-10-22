@@ -5,6 +5,10 @@
     <Project Path="src/NinjaQueue.EntityFrameworkCore/NinjaQueue.EntityFrameworkCore.csproj" />
     <Project Path="src/NinjaQueue.PostgreSql/NinjaQueue.PostgreSql.csproj" />
     <Project Path="src/NinjaQueue.SqlServer/NinjaQueue.SqlServer.csproj" />
+    <Project Path="src/NinjaQueue.Dashboard/NinjaQueue.Dashboard.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/NinjaQueue.Demo/NinjaQueue.Demo.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/NinjaQueue.Tests/NinjaQueue.Tests.csproj" />

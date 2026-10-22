@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace NinjaQueue.EntityFrameworkCore.Migrations;
@@ -13,6 +14,13 @@ public abstract class NinjaQueueMigration : Migration
 {
     /// <summary>The schema that holds the job tables (set before the migration runs).</summary>
     public string Schema { get; internal set; } = JobSchemaName.Default;
+
+    /// <summary>
+    /// An empty target model that only carries the EF Core version. Without a model, SQL Server's migration generator applies
+    /// the pre-EF-2.0 rule and adds an "IS NOT NULL" filter to every unique index, which the NinjaQueue schema does not have.
+    /// </summary>
+    protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        => modelBuilder?.HasAnnotation("ProductVersion", "10.0.0");
 
     /// <summary>True when the migration runs on PostgreSQL.</summary>
     protected static bool IsPostgres(MigrationBuilder migrationBuilder)

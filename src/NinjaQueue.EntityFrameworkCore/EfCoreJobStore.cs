@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;
+using NinjaQueue.EntityFrameworkCore.Data;
 using NinjaQueue.EntityFrameworkCore.Sql;
 using NinjaQueue.Storage;
-using NinjaQueue.EntityFrameworkCore.Data;
 
 namespace NinjaQueue.EntityFrameworkCore;
 

@@ -10,8 +10,22 @@ installs and upgrades that schema itself.
 - **Recurring jobs**: cron schedules with time zones, misfire policies and overlap control.
 - **Keys**: idempotency, unique and concurrency keys, all tenant-scoped.
 - **Multi-tenant**: every job carries its tenant; admin queries are scoped to the caller's tenants.
-- **Admin API**: list, detail, retry, requeue, cancel and bulk operations, stats, workers.
+- **Dashboard**: a built-in web UI and HTTP API (`app.MapNinjaQueueDashboard("/jobs")`) with its own users, tenant switcher,
+  retry / requeue / cancel and bulk actions, recurring schedules and live workers.
 - **Health and metrics**: an ASP.NET Core health check and `System.Diagnostics.Metrics` instruments.
+
+## Try it in 2 minutes
+
+```bash
+git clone https://github.com/alisaivi786/NinjaQueue
+cd NinjaQueue/samples/NinjaQueue.Demo
+docker compose up --build                     # PostgreSQL; add --profile sqlserver for SQL Server on :8081
+```
+
+- **http://localhost:8080**: the Demo Shop. Each button creates real jobs: fire-and-forget, an order with an outbox and a
+  continuation, a declined card that dead-letters, a delayed reminder, a long import with progress, a 200-job burst.
+- **http://localhost:8080/jobs**: the dashboard. Sign in as `admin` / `admin` (you choose a new password), or as the tenant
+  users `acme` / `globex` (password `demo-pass-123`) to see what a single tenant sees.
 
 ## Packages
 
@@ -22,6 +36,7 @@ installs and upgrades that schema itself.
 | `NinjaQueue.EntityFrameworkCore` | The EF Core store and the schema migrations (provider-neutral). |
 | `NinjaQueue.PostgreSql` | PostgreSQL (13+): `UsePostgreSql()`, LISTEN/NOTIFY instant wake-up. |
 | `NinjaQueue.SqlServer` | SQL Server (compatibility level 130+): `UseSqlServer()`. |
+| `NinjaQueue.Dashboard` | The web dashboard and its HTTP API: `MapNinjaQueueDashboard()`. |
 
 ## Quick start
 
@@ -86,6 +101,27 @@ await tx.CommitAsync(ct);                                                       
 Applications whose repositories open their own unit of work plug it in through `IJobTransactionLocator<TContext>`
 and `IJobTransactionParticipant`.
 
+## Dashboard
+
+```csharp
+builder.Services.AddNinjaQueueDashboard();
+app.MapNinjaQueueDashboard("/jobs");          // the UI at /jobs, its API at /jobs/api
+```
+
+- **Its own sign-in**, independent of your app's authentication. On first start there is one admin,
+  `NinjaQueue:Dashboard:Admin:UserName` / `Password` (default `admin` / `admin`), who must choose a new password before
+  anything else; after that only the stored hash counts. Passwords are PBKDF2-SHA256 hashes; five failed sign-ins lock an
+  account for 15 minutes; a password change ends the user's other sessions.
+- **Tenants**: admins see every tenant and can filter by one; other users see only the tenants they are assigned (enforced
+  on the server: another tenant's job answers 404). Add users and tenant names in the dashboard, or from code with
+  `NinjaQueueDashboardUsers.UpsertTenantAsync` / `EnsureUserAsync`.
+- **Built-in HTTP API** (plain minimal APIs, JSON `{ "data": ... }`): `auth/login`, `auth/me`, `auth/change-password`, `jobs`,
+  `jobs/{id}`, `jobs/{id}/retry|requeue|cancel`, `jobs/bulk/{operation}`, `jobs/stats`, `jobs/lookups`, `jobs/recurring`,
+  `jobs/recurring/{code}/pause|resume|trigger`, `jobs/workers`, `tenants`, `users`. State-changing calls need the
+  `X-NinjaQueue-Csrf: 1` header. Every job action needs a reason, recorded in the job's history.
+- Sessions are encrypted with ASP.NET Core Data Protection: with more than one instance, share the key ring
+  (`AddDataProtection().PersistKeysTo...`) so a sign-in works on every instance.
+
 ## Configuration
 
 ```json
@@ -106,6 +142,7 @@ Where a DBA applies schema changes, set `AutoMigrate` to `false` and hand over t
 ## Building and testing
 
 ```bash
+cd src/NinjaQueue.Dashboard/ui && npm ci && npm run build && cd -   # the dashboard UI (Node.js 20+); also built on first dotnet build
 dotnet build NinjaQueue.slnx
 dotnet test tests/NinjaQueue.Tests
 dotnet test tests/NinjaQueue.IntegrationTests       # needs Docker (PostgreSQL 16 and SQL Server 2022 via Testcontainers)

@@ -32,9 +32,9 @@ public sealed class WatchdogHealthTests(JobsDatabaseFixture fixture)
         await db.ExecuteAsync($"""
             CREATE ROLE {role} LOGIN NOSUPERUSER PASSWORD '{password}';
             GRANT CONNECT ON DATABASE {database} TO {role};
-            GRANT USAGE ON SCHEMA jobs TO {role};
-            GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA jobs TO {role};
-            GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA jobs TO {role};
+            GRANT USAGE ON SCHEMA ninjaqueue TO {role};
+            GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ninjaqueue TO {role};
+            GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ninjaqueue TO {role};
             GRANT SELECT, INSERT, UPDATE, DELETE ON test_widgets TO {role};
             GRANT USAGE, SELECT ON SEQUENCE test_widgets_id_seq TO {role};
             """);

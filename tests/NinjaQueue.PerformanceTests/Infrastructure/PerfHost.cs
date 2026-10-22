@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using NinjaQueue.EntityFrameworkCore;
 using NinjaQueue.Hosting;
 using NinjaQueue.Storage;
 

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using NinjaQueue.EntityFrameworkCore;
-using NinjaQueue.PostgreSql;
 using NinjaQueue.SqlServer;
 
 namespace NinjaQueue.IntegrationTests.Infrastructure;

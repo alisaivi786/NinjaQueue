@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- "Demo Shop": a tiny app that uses NinjaQueue through project references (not nuget.org), with the dashboard at /jobs. -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <UserSecretsId>ninjaqueue-demo</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\NinjaQueue.PostgreSql\NinjaQueue.PostgreSql.csproj" />
+    <ProjectReference Include="..\..\src\NinjaQueue.SqlServer\NinjaQueue.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\NinjaQueue.Dashboard\NinjaQueue.Dashboard.csproj" />
+  </ItemGroup>
+
+</Project>
