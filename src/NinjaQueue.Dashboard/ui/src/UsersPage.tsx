@@ -6,6 +6,7 @@ import { errorMessage, formatLocalDateTime } from '@shared';
 import { Button } from './hcm/components/ui/button';
 import { Input } from './hcm/components/ui/input';
 import { Label } from './hcm/components/ui/label';
+import { PasswordInput } from './PasswordInput';
 import {
   accountKeys,
   createUser,
@@ -157,7 +158,7 @@ export function UsersPage({ me }: { me: Me }) {
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="newPassword">Initial password</Label>
-              <Input id="newPassword" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
+              <PasswordInput id="newPassword" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
             </div>
           </div>
           <label className="flex items-center gap-2 text-sm text-foreground">
@@ -282,7 +283,7 @@ function EditUser({
             <KeyRound className="mr-1 inline h-4 w-4" />
             Reset password (optional; they must change it at next sign-in)
           </Label>
-          <Input id="resetPassword" type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} autoComplete="new-password" />
+          <PasswordInput id="resetPassword" value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} autoComplete="new-password" />
         </div>
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onCancel}>

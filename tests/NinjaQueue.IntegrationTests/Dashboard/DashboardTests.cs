@@ -59,6 +59,19 @@ public sealed class DashboardTests(JobsDatabaseFixture fixture)
 
     [Theory]
     [MemberData(nameof(Kinds))]
+    public async Task The_default_admin_exists_even_when_the_host_created_tenant_users_first(DatabaseKind kind)
+    {
+        await using DashboardHost host = await DashboardHost.StartAsync(await fixture.CreateDatabaseAsync(kind));
+        await host.SeedTenantUserAsync("early-user", TenantA);
+        using HttpClient client = host.CreateClient();
+
+        HttpResponseMessage login = await Login(client, "admin", "admin");
+        login.StatusCode.Should().Be(HttpStatusCode.OK, "a tenant user created from code must not block the first admin");
+        (await Data(login)).GetProperty("isAdmin").GetBoolean().Should().BeTrue();
+    }
+
+    [Theory]
+    [MemberData(nameof(Kinds))]
     public async Task State_changes_need_the_csrf_header_and_failed_logins_lock_the_account(DatabaseKind kind)
     {
         await using DashboardHost host = await DashboardHost.StartAsync(await fixture.CreateDatabaseAsync(kind));
@@ -245,6 +258,14 @@ internal sealed class DashboardHost(WebApplication app, Uri baseAddress) : IAsyn
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
         return await scope.ServiceProvider.GetRequiredService<IJobEnqueuer>().EnqueueAsync(
             new DashboardProbe(1), new JobOptions { TenantId = tenantId, RunAt = DateTimeOffset.UtcNow.AddHours(1) });
+    }
+
+    public async Task SeedTenantUserAsync(string userName, Guid tenantId)
+    {
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        NinjaQueue.Dashboard.NinjaQueueDashboardUsers users = scope.ServiceProvider.GetRequiredService<NinjaQueue.Dashboard.NinjaQueueDashboardUsers>();
+        await users.UpsertTenantAsync(tenantId, "Early tenant");
+        await users.EnsureUserAsync(userName, "early-pass-123", isAdmin: false, [tenantId]);
     }
 
     public async ValueTask DisposeAsync()

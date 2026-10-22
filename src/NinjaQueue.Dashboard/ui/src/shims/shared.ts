@@ -49,7 +49,10 @@ hcmApiClient.interceptors.response.use(
   (error) => {
     const status = error?.response?.status;
     const code = error?.response?.data?.error?.code;
-    if (status === 401 || (status === 403 && code === 'PasswordChangeRequired')) {
+    // Sign-in calls (auth/me, auth/login, ...) answer 401 by design and are handled by the screen that made them;
+    // signalling on them would make the app re-check auth/me, get 401 again and loop.
+    const isAuthCall = String(error?.config?.url ?? '').includes('/auth/');
+    if (!isAuthCall && (status === 401 || (status === 403 && code === 'PasswordChangeRequired'))) {
       window.dispatchEvent(new Event(AUTH_EVENT));
     }
     return Promise.reject(error);

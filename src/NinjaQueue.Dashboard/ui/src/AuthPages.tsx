@@ -5,6 +5,7 @@ import { errorMessage } from '@shared';
 import { Button } from './hcm/components/ui/button';
 import { Input } from './hcm/components/ui/input';
 import { Label } from './hcm/components/ui/label';
+import { PasswordInput } from './PasswordInput';
 import { changePassword, login, logout, type Me } from './account-api';
 
 function AuthCard({ title, subtitle, children }: { title: string; subtitle: string; children: ReactNode }) {
@@ -61,7 +62,7 @@ export function LoginPage({ onSignedIn }: { onSignedIn: (me: Me) => void }) {
           <Input id="userName" autoComplete="username" value={userName} onChange={(e) => setUserName(e.target.value)} autoFocus required />
         </Field>
         <Field id="password" label="Password">
-          <Input id="password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <PasswordInput id="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </Field>
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
         <Button type="submit" disabled={busy}>
@@ -100,13 +101,13 @@ export function ChangePasswordPage({ me, onChanged, onSignedOut }: { me: Me; onC
     <AuthCard title="Choose a new password" subtitle={`${me.userName} - required before you continue`}>
       <form className="grid gap-4" onSubmit={submit}>
         <Field id="current" label="Current password">
-          <Input id="current" type="password" autoComplete="current-password" value={current} onChange={(e) => setCurrent(e.target.value)} required />
+          <PasswordInput id="current" autoComplete="current-password" value={current} onChange={(e) => setCurrent(e.target.value)} required />
         </Field>
         <Field id="next" label="New password (at least 8 characters)">
-          <Input id="next" type="password" autoComplete="new-password" value={next} onChange={(e) => setNext(e.target.value)} required minLength={8} />
+          <PasswordInput id="next" autoComplete="new-password" value={next} onChange={(e) => setNext(e.target.value)} required minLength={8} />
         </Field>
         <Field id="confirm" label="Confirm new password">
-          <Input id="confirm" type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} required minLength={8} />
+          <PasswordInput id="confirm" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} required minLength={8} />
         </Field>
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
         <Button type="submit" disabled={busy}>

@@ -390,7 +390,9 @@ internal static partial class DashboardApi
 
     private static async Task SeedAdminAsync(IJobDashboardStore store, NinjaQueueDashboardOptions settings, CancellationToken ct)
     {
-        if (await store.CountUsersAsync(ct) > 0)
+        // The configured admin exists until the dashboard has an admin of its own. Counting admins (not users) matters: a host
+        // may create tenant users from code before anyone signs in, and the dashboard must still be reachable.
+        if ((await store.ListUsersAsync(ct)).Any(u => u.IsAdmin))
         {
             return;
         }
