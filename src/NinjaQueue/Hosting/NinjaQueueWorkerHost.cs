@@ -72,11 +72,15 @@ public sealed class NinjaQueueWorkerHost : IHostedService, IAsyncDisposable
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         ValidateShutdownBudget();
-        await StartupChecks.RunAsync(_scopes, _registry, _options, cancellationToken);
+
+        // An enqueue-only instance (workers off, e.g. an API whose jobs another service runs) never needs the database to
+        // start: it may come up before the database or the instance that owns the schema. The server checks run with workers.
         if (!_options.Worker.Enabled)
         {
             return;
         }
+
+        await StartupChecks.RunAsync(_scopes, _registry, _options, cancellationToken);
 
         await HeartbeatOnceAsync(cancellationToken);
         foreach ((string queue, int concurrency) in _options.Worker.Queues)
